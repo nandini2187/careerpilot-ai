@@ -14,9 +14,12 @@ export async function GET(request) {
   let query = serverClient().from('colleges').select('*').order('name')
   if (q) query = query.or(`name.ilike.%${q}%,city.ilike.%${q}%`)
   if (state) query = query.eq('state', state)
-  if (type) query = query.eq('type', type)
+  if (type) query = query.eq('college_type', type)
 
   const { data, error } = await query
-  if (error) return Response.json({ error: 'Could not load colleges' }, { status: 500 })
+  if (error) {
+  console.error('Supabase colleges error:', error)
+  return Response.json({ error: error.message }, { status: 500 })
+}
   return Response.json({ count: data.length, colleges: data })
 }
